@@ -1,0 +1,216 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JAVA常见异常状态码 | Gridea</title>
+<meta name="description" content="温故而知新" />
+<link rel="shortcut icon" href="https://klein-moretti.github.io/favicon.ico?v=1576067450844">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://klein-moretti.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://klein-moretti.github.io">
+  <img class="avatar" src="https://klein-moretti.github.io/images/avatar.png?v=1576067450844" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              JAVA常见异常状态码
+            </h2>
+            <div class="post-info">
+              <span>
+                2018-11-26
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>4xx（请求错误）<br>
+这些状态代码表示请求可能出错，妨碍了服务器的处理。</p>
+<p>代码 说明<br>
+==400 ==（错误请求） 服务器不理解请求的语法。<br>
+401 （未授权） 请求要求身份验证。 对于需要登录的网页，服务器可能返回此响应。<br>
+403 （禁止） 服务器拒绝请求。<br>
+404 （未找到） 服务器找不到请求的网页。<br>
+405 （方法禁用） 禁用请求中指定的方法。<br>
+406 （不接受） 无法使用请求的内容特性响应请求的网页。<br>
+407 （需要代理授权） 此状态代码与 401（未授权）类似，但指定请求者应当授权使用代理。<br>
+408 （请求超时） 服务器等候请求时发生超时。<br>
+409 （冲突） 服务器在完成请求时发生冲突。服务器必须在响应中包含有关冲突的信息。<br>
+410 （已删除） 如果请求的资源已永久删除，服务器就会返回此响应。<br>
+411 （需要有效长度） 服务器不接受不含有效内容长度标头字段的请求。<br>
+412 （未满足前提条件） 服务器未满足请求者在请求中设置的其中一个前提条件。<br>
+413 （请求实体过大） 服务器无法处理请求，因为请求实体过大，超出服务器的处理能力。<br>
+414 （请求的 URI 过长） 请求的 URI（通常为网址）过长，服务器无法处理。<br>
+415 （不支持的媒体类型） 请求的格式不受请求页面的支持。<br>
+416 （请求范围不符合要求） 如果页面无法提供请求的范围，则服务器会返回此状态代码。<br>
+417 （未满足期望值） 服务器未满足&quot;期望&quot;请求标头字段的要求。</p>
+<p>5xx（服务器错误）<br>
+这些状态代码表示服务器在尝试处理请求时发生内部错误。 这些错误可能是服务器本身的错误，而不是请求出错。</p>
+<p>代码 说明<br>
+500 （服务器内部错误） 服务器遇到错误，无法完成请求。<br>
+501 （尚未实施） 服务器不具备完成请求的功能。例如，服务器无法识别请求方法时可能会返回此代码。<br>
+502 （错误网关） 服务器作为网关或代理，从上游服务器收到无效响应。<br>
+503 （服务不可用） 服务器目前无法使用（由于超载或停机维护）。通常，这只是暂时状态。<br>
+504 （网关超时） 服务器作为网关或代理，但是没有及时从上游服务器收到请求。<br>
+505 （HTTP 版本不受支持） 服务器不支持请求中所用的 HTTP 协议版本。</p>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://klein-moretti.github.io/post/springmvc-zong-jie">
+              <h3 class="post-title">
+                SpringMVC总结
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '5f51923c9ec53cb563e3',
+    clientSecret: 'f9761a694a1efb19ea50e2c5c589dd76d15e775a',
+    repo: 'klein-moretti.github.io',
+    owner: 'klein-moretti',
+    admin: ['klein-moretti'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://klein-moretti.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
+
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
