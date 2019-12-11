@@ -1,0 +1,404 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>三大框架整合 | Gridea</title>
+<meta name="description" content="温故而知新" />
+<link rel="shortcut icon" href="https://klein-moretti.github.io/favicon.ico?v=1576065276475">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://klein-moretti.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://klein-moretti.github.io">
+  <img class="avatar" src="https://klein-moretti.github.io/images/avatar.png?v=1576065276475" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              三大框架整合
+            </h2>
+            <div class="post-info">
+              <span>
+                2018-05-13
+              </span>
+              <span>
+                8 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="ssm整合步骤">SSM整合步骤</h1>
+<h2 id="spring和mybatis整合">Spring和Mybatis整合</h2>
+<ol>
+<li>
+<p>加入Spring、mybatis的依赖</p>
+<pre><code class="language-xml">&lt;!-- Spring相关依赖 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+    &lt;version&gt;5.2.0.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-jdbc&lt;/artifactId&gt;
+    &lt;version&gt;5.2.0.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-test&lt;/artifactId&gt;
+    &lt;version&gt;5.2.0.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!-- mybatis相关依赖 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.mybatis&lt;/groupId&gt;
+    &lt;artifactId&gt;mybatis&lt;/artifactId&gt;
+    &lt;version&gt;3.4.6&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!-- Spring、Mybatis整合依赖 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.mybatis&lt;/groupId&gt;
+    &lt;artifactId&gt;mybatis-spring&lt;/artifactId&gt;
+    &lt;version&gt;1.3.2&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!-- mysql驱动 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;mysql&lt;/groupId&gt;
+    &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+    &lt;version&gt;5.1.47&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>在Spring bean配置文件中，配置整合的Bean</p>
+<p>在类路径下新建applicationContext.xml文件，做如下配置：</p>
+<ol>
+<li>
+<p>配置数据源</p>
+<pre><code class="language-xml">&lt;context:property-placeholder location=&quot;classpath*:/jdbc.properties&quot; /&gt;
+&lt;!-- 连接池 --&gt;
+&lt;bean id=&quot;dataSource&quot; class=&quot;org.springframework.jdbc.datasource.DriverManagerDataSource&quot;&gt;
+    &lt;property name=&quot;driverClassName&quot; value=&quot;${jdbc.driver}&quot; /&gt;
+    &lt;property name=&quot;url&quot; value=&quot;${jdbc.url}&quot; /&gt;
+    &lt;property name=&quot;username&quot; value=&quot;${jdbc.username}&quot; /&gt;
+    &lt;property name=&quot;password&quot; value=&quot;${jdbc.password}&quot; /&gt;
+&lt;/bean&gt;
+</code></pre>
+</li>
+<li>
+<p>配置SqlSessionFactoryBean</p>
+<pre><code class="language-xml">&lt;bean class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
+    &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+    &lt;property name=&quot;typeAliasesPackage&quot; value=&quot;com.lanou3g.ssm.bean&quot; /&gt;
+    &lt;property name=&quot;mapperLocations&quot; value=&quot;classpath*:/mybatis/mappers/*.xml&quot; /&gt;
+&lt;/bean&gt;
+</code></pre>
+</li>
+</ol>
+</li>
+<li>
+<p>编写mybatis的mapper映射文件、mapper接口、核心配置文件(可选)</p>
+<blockquote>
+<p>mapper映射文件和mapper接口可直接用mybatis逆向工程生成</p>
+</blockquote>
+</li>
+<li>
+<p>配置扫描包路径</p>
+<pre><code class="language-xml">&lt;context:component-scan base-package=&quot;com.lanou3g.ssm.service&quot;  /&gt;
+</code></pre>
+</li>
+<li>
+<p>配置mapper接口扫描路径</p>
+<pre><code class="language-xml">&lt;mybatis:scan base-package=&quot;com.lanou3g.ssm.mapper&quot; /&gt;
+</code></pre>
+<blockquote>
+<p>作用是让mybatis去指定的包下找Mapper接口，生成实现类，注入到IOC容器中</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="spring和springmvc">Spring和SpringMVC</h2>
+<ol>
+<li>
+<p>添加SpringMVC依赖和Servlet、JSTL依赖</p>
+<pre><code class="language-xml">&lt;!-- SpringMVC依赖 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+    &lt;version&gt;5.2.0.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;!-- Servlet api 依赖 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
+    &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
+    &lt;version&gt;3.1.0&lt;/version&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
+    &lt;artifactId&gt;jstl&lt;/artifactId&gt;
+    &lt;version&gt;1.2&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>配置SpringMVC</p>
+<p>web.xml</p>
+<pre><code class="language-xml">&lt;web-app xmlns=&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd&quot;
+         version=&quot;3.1&quot;&gt;
+
+  &lt;!-- 配置root applicationContext --&gt;
+  &lt;context-param&gt;
+    &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+    &lt;param-value&gt;classpath*:application*.xml&lt;/param-value&gt;
+  &lt;/context-param&gt;
+
+  &lt;listener&gt;
+    &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+  &lt;/listener&gt;
+
+  &lt;!-- 配置请求编码 --&gt;
+  &lt;filter&gt;
+    &lt;filter-name&gt;charchaterFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
+    &lt;init-param&gt;
+      &lt;param-name&gt;encoding&lt;/param-name&gt;
+      &lt;param-value&gt;UTF-8&lt;/param-value&gt;
+    &lt;/init-param&gt;
+  &lt;/filter&gt;
+  &lt;filter-mapping&gt;
+    &lt;filter-name&gt;charchaterFilter&lt;/filter-name&gt;
+    &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+  &lt;/filter-mapping&gt;
+
+  &lt;!-- 配置DispatcherServlet大总管 --&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+&lt;/web-app&gt;
+</code></pre>
+<p>dispatcher-servlet.xml</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xmlns:mvc=&quot;http://www.springframework.org/schema/mvc&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+
+    &lt;!-- 配置扫描Controller的包路径 --&gt;
+    &lt;context:component-scan base-package=&quot;com.lanou3g.ssm.web&quot; /&gt;
+
+    &lt;!-- 配置视图解析器 --&gt;
+    &lt;mvc:view-resolvers&gt;
+        &lt;bean class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
+            &lt;property name=&quot;prefix&quot; value=&quot;/&quot; /&gt;
+            &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
+        &lt;/bean&gt;
+    &lt;/mvc:view-resolvers&gt;
+
+    &lt;!-- 开启SpringMVC注解支持 --&gt;
+    &lt;mvc:annotation-driven&gt;
+        &lt;!-- 配置消息转换器，将REST返回的对象类型转成JSON --&gt;
+        &lt;mvc:message-converters&gt;
+            &lt;bean class=&quot;com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter&quot;&gt;
+                &lt;property name=&quot;defaultCharset&quot; value=&quot;UTF-8&quot; /&gt;
+                &lt;property name=&quot;supportedMediaTypes&quot;&gt;
+                    &lt;list&gt;
+                        &lt;!-- 这里配置的text/html主要是解决IE浏览器请求JSON会弹出下载框的问题 --&gt;
+                        &lt;value&gt;text/html&lt;/value&gt;
+                        &lt;value&gt;application/json&lt;/value&gt;
+                    &lt;/list&gt;
+                &lt;/property&gt;
+            &lt;/bean&gt;
+        &lt;/mvc:message-converters&gt;
+    &lt;/mvc:annotation-driven&gt;
+
+    &lt;!-- 静态资源放行 --&gt;
+    &lt;mvc:resources mapping=&quot;/static/**&quot; location=&quot;/static/&quot; /&gt;
+&lt;/beans&gt;
+</code></pre>
+</li>
+</ol>
+<p>至此，SSM三个框架就整合完成了。 可以编写自己的service代码和controller层代码。放一个项目目录结构图</p>
+<figure data-type="image" tabindex="1"><img src="https://klein-moretti.github.io/post-images/1576061791471.png" alt=""></figure>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#ssm%E6%95%B4%E5%90%88%E6%AD%A5%E9%AA%A4">SSM整合步骤</a>
+<ul>
+<li><a href="#spring%E5%92%8Cmybatis%E6%95%B4%E5%90%88">Spring和Mybatis整合</a></li>
+<li><a href="#spring%E5%92%8Cspringmvc">Spring和SpringMVC</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://klein-moretti.github.io/post/shu-ju-fen-ye">
+              <h3 class="post-title">
+                数据分页
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '5f51923c9ec53cb563e3',
+    clientSecret: 'f9761a694a1efb19ea50e2c5c589dd76d15e775a',
+    repo: 'klein-moretti.github.io',
+    owner: 'klein-moretti',
+    admin: ['klein-moretti'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://klein-moretti.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
+
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>

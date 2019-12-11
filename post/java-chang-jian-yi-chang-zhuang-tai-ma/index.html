@@ -2,9 +2,9 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Hello Gridea | Gridea</title>
+<title>JAVA常见异常状态码 | Gridea</title>
 <meta name="description" content="温故而知新" />
-<link rel="shortcut icon" href="https://klein-moretti.github.io/favicon.ico?v=1576061606677">
+<link rel="shortcut icon" href="https://klein-moretti.github.io/favicon.ico?v=1576065276475">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://klein-moretti.github.io/styles/main.css">
@@ -20,7 +20,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://klein-moretti.github.io">
-  <img class="avatar" src="https://klein-moretti.github.io/images/avatar.png?v=1576061606677" alt="">
+  <img class="avatar" src="https://klein-moretti.github.io/images/avatar.png?v=1576065276475" alt="">
   </a>
   <h1 class="site-title">
     Gridea
@@ -73,58 +73,53 @@
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              Hello Gridea
+              JAVA常见异常状态码
             </h2>
             <div class="post-info">
               <span>
-                2018-12-12
+                2018-11-26
               </span>
               <span>
-                2 min read
+                3 min read
               </span>
-              
-                <a href="https://klein-moretti.github.io/tag/3VClPoerq" class="post-tag">
-                  # Gridea
-                </a>
               
             </div>
             
-              <img class="post-feature-image" src="https://klein-moretti.github.io/post-images/hello-gridea.png" alt="">
-            
             <div class="post-content-wrapper">
               <div class="post-content">
-                <p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
-<!-- more -->
-<p><a href="https://github.com/getgridea/gridea">Github</a><br>
-<a href="https://gridea.dev/">Gridea 主页</a><br>
-<a href="http://fehey.com/">示例网站</a></p>
-<h2 id="特性">特性👇</h2>
-<p>📝  你可以使用最酷的 <strong>Markdown</strong> 语法，进行快速创作</p>
-<p>🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片</p>
-<p>🏷️  你可以对文章进行标签分组</p>
-<p>📋  你可以自定义菜单，甚至可以创建外部链接菜单</p>
-<p>💻  你可以在 <strong>Windows</strong>，<strong>MacOS</strong> 或 <strong>Linux</strong> 设备上使用此客户端</p>
-<p>🌎  你可以使用 <strong>𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌</strong> 或 <strong>Coding Pages</strong> 向世界展示，未来将支持更多平台</p>
-<p>💬  你可以进行简单的配置，接入 <a href="https://github.com/gitalk/gitalk">Gitalk</a> 或 <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a> 评论系统</p>
-<p>🇬🇧  你可以使用<strong>中文简体</strong>或<strong>英语</strong></p>
-<p>🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力</p>
-<p>🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步</p>
-<p>🌱 当然 <strong>Gridea</strong> 还很年轻，有很多不足，但请相信，它会不停向前 🏃</p>
-<p>未来，它一定会成为你离不开的伙伴</p>
-<p>尽情发挥你的才华吧！</p>
-<p>😘 Enjoy~</p>
+                <p>4xx（请求错误）<br>
+这些状态代码表示请求可能出错，妨碍了服务器的处理。</p>
+<p>代码 说明<br>
+==400 ==（错误请求） 服务器不理解请求的语法。<br>
+401 （未授权） 请求要求身份验证。 对于需要登录的网页，服务器可能返回此响应。<br>
+403 （禁止） 服务器拒绝请求。<br>
+404 （未找到） 服务器找不到请求的网页。<br>
+405 （方法禁用） 禁用请求中指定的方法。<br>
+406 （不接受） 无法使用请求的内容特性响应请求的网页。<br>
+407 （需要代理授权） 此状态代码与 401（未授权）类似，但指定请求者应当授权使用代理。<br>
+408 （请求超时） 服务器等候请求时发生超时。<br>
+409 （冲突） 服务器在完成请求时发生冲突。服务器必须在响应中包含有关冲突的信息。<br>
+410 （已删除） 如果请求的资源已永久删除，服务器就会返回此响应。<br>
+411 （需要有效长度） 服务器不接受不含有效内容长度标头字段的请求。<br>
+412 （未满足前提条件） 服务器未满足请求者在请求中设置的其中一个前提条件。<br>
+413 （请求实体过大） 服务器无法处理请求，因为请求实体过大，超出服务器的处理能力。<br>
+414 （请求的 URI 过长） 请求的 URI（通常为网址）过长，服务器无法处理。<br>
+415 （不支持的媒体类型） 请求的格式不受请求页面的支持。<br>
+416 （请求范围不符合要求） 如果页面无法提供请求的范围，则服务器会返回此状态代码。<br>
+417 （未满足期望值） 服务器未满足&quot;期望&quot;请求标头字段的要求。</p>
+<p>5xx（服务器错误）<br>
+这些状态代码表示服务器在尝试处理请求时发生内部错误。 这些错误可能是服务器本身的错误，而不是请求出错。</p>
+<p>代码 说明<br>
+500 （服务器内部错误） 服务器遇到错误，无法完成请求。<br>
+501 （尚未实施） 服务器不具备完成请求的功能。例如，服务器无法识别请求方法时可能会返回此代码。<br>
+502 （错误网关） 服务器作为网关或代理，从上游服务器收到无效响应。<br>
+503 （服务不可用） 服务器目前无法使用（由于超载或停机维护）。通常，这只是暂时状态。<br>
+504 （网关超时） 服务器作为网关或代理，但是没有及时从上游服务器收到请求。<br>
+505 （HTTP 版本不受支持） 服务器不支持请求中所用的 HTTP 协议版本。</p>
 
               </div>
               <div class="toc-container">
-                <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li><a href="#%E7%89%B9%E6%80%A7">特性👇</a></li>
-</ul>
-</li>
-</ul>
-
+                
               </div>
             </div>
           </article>
@@ -133,9 +128,9 @@
         
           <div class="next-post">
             <div class="next">下一篇</div>
-            <a href="https://klein-moretti.github.io/post/cookieandsession-zong-jie">
+            <a href="https://klein-moretti.github.io/post/linux-chang-yong-ming-ling">
               <h3 class="post-title">
-                Cookie&amp;Session 总结
+                Linux常用命令
               </h3>
             </a>
           </div>
