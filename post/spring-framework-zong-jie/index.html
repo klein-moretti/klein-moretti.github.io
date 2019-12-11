@@ -1,0 +1,817 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Spring Framework总结 | Gridea</title>
+<meta name="description" content="温故而知新" />
+<link rel="shortcut icon" href="https://klein-moretti.github.io/favicon.ico?v=1576066567699">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://klein-moretti.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://klein-moretti.github.io">
+  <img class="avatar" src="https://klein-moretti.github.io/images/avatar.png?v=1576066567699" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Spring Framework总结
+            </h2>
+            <div class="post-info">
+              <span>
+                2018-11-28
+              </span>
+              <span>
+                19 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="springioc">SpringIOC</h1>
+<h2 id="ioc容器概念">IOC容器概念</h2>
+<p>IOC其实就是一个对象的容器。全称Inversion Of Control 控制反转，核心的作用就是将原来由开发人员来控制的对象管理操作交由Spring来管理。</p>
+<p>SpringIOC不仅帮我们管理了对象的创建，还包括给对象增加了生命周期行为、作用域(单例、非单例)、懒加载。 配合Spring的DI， 更能方便的解决对象属性值注入、对象之间的依赖注入问题。</p>
+<h2 id="ioc容器初始化方式">IOC容器初始化方式</h2>
+<h3 id="classpathxmlapplicationcontext">ClassPathXmlApplicationContext</h3>
+<p>加载类路径下的xml配置文件的方式，去初始化IOC容器上下文</p>
+<pre><code class="language-java">// 加载单个xml配置，初始化上下文
+ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(&quot;applicationContext1.xml&quot;);
+
+// 加载多个xml配置，初始化上下文
+ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[]{&quot;applicationContext1.xml&quot;, &quot;applicationContext2.xml&quot;});
+
+// 加载当前运行类所在的类路径下所有以application开头的配置文件
+ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(&quot;appliction*.xml&quot;);
+
+// 加载工程中所有类路径下所有以application开头的配置文件
+ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(&quot;classpath*:appliction*.xml&quot;);
+
+// 加载工程中所有类路径下所有以application或spring开头的配置文件
+ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[]{&quot;classpath*:appliction*.xml&quot;, &quot;classpath*:spring*.xml&quot;});
+</code></pre>
+<blockquote>
+<p>配置文件路径中可以包含通配符(*)和前缀(classpath*:，代表所有类路径，包括源码类路径和单元测试类路径)</p>
+</blockquote>
+<h3 id="annotationconfigapplicationcontext">AnnotationConfigApplicationContext</h3>
+<p>加载通过Java注解方式配置的Bean上下文。</p>
+<pre><code class="language-java">// 加载单个注解配置，初始化上下文
+AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(MyConfiguration.class);
+
+// 加载多个注解配置，初始化上下文
+AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(new Class[]{MyConfiguration1.class, MyConfiguration2.class});
+</code></pre>
+<h2 id="bean初始化方式">Bean初始化方式</h2>
+<h3 id="构造方法方式最常用">构造方法方式（最常用）</h3>
+<pre><code class="language-xml">&lt;bean id=&quot;xx&quot; class=&quot;com.test.StudentDao&quot; /&gt;
+</code></pre>
+<h3 id="静态工厂方法">静态工厂方法</h3>
+<pre><code class="language-xml">&lt;!-- 
+	class：指定的是静态工厂类，而不是将要创建的对象类型
+	factory-method: 指定的是工厂中的静态方法 
+--&gt;
+&lt;bean id=&quot;xx&quot; class=&quot;com.test.StudentDaoFactory&quot; factory-method=&quot;createDao&quot; /&gt;
+</code></pre>
+<h3 id="实例工厂方法">实例工厂方法</h3>
+<pre><code class="language-xml">&lt;!-- 
+	class：指定的是实例工厂类 
+--&gt;
+&lt;bean id=&quot;xxFactory&quot; class=&quot;com.test.StudentDaoFactory&quot; /&gt;
+&lt;!-- 
+	factory-bean：指定的是实例工厂对象
+	factory-method: 指定的是工厂中的实例方法 
+--&gt;
+&lt;bean id=&quot;xx&quot; factory-bean=&quot;xxFactory&quot; factory-method=&quot;createDao&quot; /&gt;
+</code></pre>
+<h2 id="bean的命名">Bean的命名</h2>
+<p>在XML中配置中可以通过<bean>标签上的id、name属性值给一个bean命名，以便在其他地方引用。</p>
+<p>id属性： bean的唯一名称，只允许出现一个值。且同一个IOC容器中不允许出现两个id值一样的bean。</p>
+<p>name属性： 和id类似也是给bean命名。但是name属性的值可以有多个，多个值之间使用英文逗号(,)或者英文分号(;)或者空格符隔开</p>
+<h2 id="bean的作用域">Bean的作用域</h2>
+<ul>
+<li>
+<p>prototype</p>
+<p>在SpringIOC中prototype scope的意思指的是非单例，就是每次使用该bean的时候都会重新创建一个对象。</p>
+<figure data-type="image" tabindex="1"><img src="https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/images/prototype.png" alt="原型作用域示意图"></figure>
+</li>
+<li>
+<p>singleton(默认)</p>
+<p>singleton作用域是IOC中默认的作用域，代表单例。每次使用bean的时候，不会重新创建对象，在整个IOC容器中该类型的对象只有一个。</p>
+<figure data-type="image" tabindex="2"><img src="https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/images/singleton.png" alt="单例作用域示意图"></figure>
+</li>
+</ul>
+<h2 id="bean的生命周期">Bean的生命周期</h2>
+<ul>
+<li>
+<p>Singleton Bean的生命周期</p>
+<ul>
+<li>初始化时机： 在IOC容器初始化时，就会把配置的所有单例bean实例化。</li>
+<li>销毁时机：在IOC容器销毁时，所有bean的销毁方法会被调用。</li>
+</ul>
+</li>
+<li>
+<p>Prototype Bean的生命周期</p>
+<ul>
+<li>初始化时机： 在实际使用该bean的时候，比如：getBean、获取依赖此bean的其他bean需要使用</li>
+<li>销毁时机： 在IOC容器销毁时。（但是通过destroy-method指定的声明周期方法不会被调用，也就是说Spring不提供prototypebean完整的生命周期管理）</li>
+</ul>
+</li>
+<li>
+<p>如何指定生命周期的回调方法</p>
+<ul>
+<li>xml中的init-method、destroy-method</li>
+<li>注解方式@PostConstrutor、@PreDestroy</li>
+</ul>
+</li>
+<li>
+<p>指定默认的声明周期回调方法</p>
+<ul>
+<li>在xml中，通过在beans标签上添加default-init-method、default-destory-method来指定</li>
+<li>在注解配置中，没有对应的方法可以设置所有bean默认的生命周期回调</li>
+</ul>
+</li>
+</ul>
+<h2 id="bean懒加载">Bean懒加载</h2>
+<p>lazy-init属性</p>
+<p>默认是false</p>
+<blockquote>
+<p>懒加载配置主要是针对单例的bean，因为它默认是在容器初始化时就被实例化了。</p>
+</blockquote>
+<h2 id="如何优雅的停止非web-spring应用">如何优雅的停止非Web Spring应用</h2>
+<p>添加一个shutdown hook。所有派生自ConfigurableApplicationContext接口的实现类都支持此方法</p>
+<pre><code class="language-java">ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext(&quot;xxx.xml&quot;);
+
+ctx.registerShutdownHook(); //注册停止回调
+</code></pre>
+<h1 id="spring-di">Spring DI</h1>
+<h2 id="概述">概述</h2>
+<p>DI的全称是Dependency Injection（依赖注入）。IOC是将我们工程中的所有对象交由Spring来管理，DI是此基础，将对象中的属性、依赖的其他对象也管理起来，自动注入到由Spring帮我们管理的对象中。</p>
+<blockquote>
+<p>将要注入的对象和目标对象都必须是由SpringIOC管理的bean.</p>
+</blockquote>
+<h2 id="di的细节实现">DI的细节实现</h2>
+<h3 id="构造参数注入">构造参数注入</h3>
+<p>将一个bean创建过程中构造方法需要的参数，通过Spring DI的方式，自动注入到构造方法中。</p>
+<h3 id="setter注入">Setter注入</h3>
+<p>先通过一个无参的构造方法创建对象，然后通过属性的setter方法，将属性值注入到对象上。</p>
+<h3 id="支持注入的类型">支持注入的类型</h3>
+<ul>
+<li>
+<p>普通字面量</p>
+<ul>
+<li>String</li>
+<li>Integer(int)</li>
+<li>Long(long)</li>
+<li>Byte(byte)</li>
+<li>...</li>
+</ul>
+</li>
+<li>
+<p>集和类型</p>
+<ul>
+<li>
+<p>List</p>
+<pre><code class="language-xml">&lt;bean id=&quot;xxx&quot; class=&quot;xx.xxx.xxx.AA&quot;&gt;&lt;/bean&gt;
+&lt;bean&gt;
+    &lt;property name=&quot;hobbies&quot;&gt;
+    	&lt;list&gt;
+        	&lt;value&gt;简单类型值&lt;/value&gt;
+            &lt;bean&gt;内部bean&lt;/bean&gt;
+            &lt;ref bean=&quot;xxx&quot; /&gt;
+        &lt;/list&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;
+</code></pre>
+</li>
+<li>
+<p>Map</p>
+<pre><code class="language-xml">&lt;bean id=&quot;xxx&quot; class=&quot;xx.xxx.xxx.AA&quot;&gt;&lt;/bean&gt;
+&lt;bean&gt;
+    &lt;property name=&quot;gameTitle&quot;&gt;
+    	&lt;map&gt;
+        	&lt;entry key=&quot;王者荣耀&quot; value=&quot;荣耀王者&quot; /&gt;
+            &lt;entry key=&quot;王者荣耀&quot; value-ref=&quot;xxx&quot; /&gt;
+        &lt;/list&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;
+</code></pre>
+</li>
+<li>
+<p>Set</p>
+<pre><code class="language-xml">&lt;bean id=&quot;xxx&quot; class=&quot;xx.xxx.xxx.AA&quot;&gt;&lt;/bean&gt;
+&lt;bean&gt;
+    &lt;property name=&quot;hobbies&quot;&gt;
+    	&lt;!-- set用法和List类似， 里面可以注入普通字面量值、也可以是一个bean引用，或者内部bean、或者是一个set、list、Properties  --&gt;
+        &lt;set&gt;
+        	&lt;value&gt;简单类型值&lt;/value&gt;
+            &lt;bean&gt;内部bean&lt;/bean&gt;
+            &lt;ref bean=&quot;xxx&quot; /&gt;
+        &lt;/set&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;
+</code></pre>
+</li>
+<li>
+<p>java.util.Properties</p>
+<pre><code class="language-xml">&lt;!-- props标签是用来注入java.util.Properties类型的属性，用法和map类似，但是属性值是在标签中间写 --&gt;
+&lt;property name=&quot;gameNick&quot;&gt;
+    &lt;props&gt;
+        &lt;prop key=&quot;王者荣耀&quot;&gt;最擅长1V5&lt;/prop&gt;
+        &lt;prop key=&quot;吃鸡&quot;&gt;一枪爆头&lt;/prop&gt;
+    &lt;/props&gt;
+&lt;/property&gt;
+</code></pre>
+</li>
+<li>
+<p>注入空置、空字符串</p>
+<pre><code class="language-xml">&lt;property name=&quot;gameNick&quot;&gt;
+    &lt;null /&gt;
+&lt;/property&gt;
+
+
+&lt;property name=&quot;gameNick&quot; value=&quot;&quot; /&gt;
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="自动装配">自动装配</h3>
+<h5 id="自动装配支持的策略">自动装配支持的策略</h5>
+<ul>
+<li>
+<p>byType</p>
+<p>按照类型去IOC容器中找需要的bean，如果找到一个，则自动装配；如果没找到，不注入此属性；如果找到了多个匹配类型的bean，就会报错。</p>
+</li>
+<li>
+<p>byName</p>
+<p>按照名称去IOC容器中找需要的bean，如果找到就自动注入；如果没找到，不注入此属性。</p>
+</li>
+<li>
+<p>constructor</p>
+<p>工作原理和byType类似，也是按照类型去IOC容器中找对应的bean。不同的是注入的地方不是setter，而是构造方法的参数。</p>
+</li>
+<li>
+<p>no  （默认值）</p>
+<p>如果没有打开自动注入，默认Spring不会自动装配需要的属性。</p>
+</li>
+</ul>
+<h2 id="xml方式的di">XML方式的DI</h2>
+<h3 id="构造参数注入-2">构造参数注入</h3>
+<ul>
+<li>
+<p>常规写法</p>
+<pre><code class="language-xml">&lt;bean id=&quot;xx&quot; class=&quot;&quot; /&gt;
+&lt;bean class=&quot;com.test.XXX&quot;&gt;
+	&lt;constructor-arg name=&quot;age&quot; value=&quot;45&quot; /&gt;
+    &lt;constructor-arg name=&quot;x&quot; ref=&quot;xx&quot; /&gt;  &lt;!-- 注入引用的bean --&gt;
+    &lt;constructor-arg name=&quot;&quot;&gt;	&lt;!-- 注入内部bean --&gt;
+    	&lt;bean&gt;&lt;/bean&gt;
+    &lt;/constructor-arg&gt;
+    &lt;constructor-arg name=&quot;&quot;&gt;	&lt;!-- 注入list类型构造参数 --&gt;
+    	&lt;list&gt;
+        	
+        &lt;/list&gt;
+    &lt;/constructor-arg&gt;
+    ....
+&lt;/bean&gt;
+</code></pre>
+</li>
+<li>
+<p>c命名空间简写</p>
+<pre><code class="language-xml">&lt;bean id=&quot;xx&quot; class=&quot;&quot; /&gt;
+&lt;bean class=&quot;com.test.XXX&quot; c:age=&quot;45&quot; c:x-ref=&quot;xx&quot; /&gt;
+</code></pre>
+</li>
+</ul>
+<h3 id="setter方式注入">setter方式注入</h3>
+<p>setter注入能够注入的类型以及写法基本和构造参数注入时的写法一致，只不过将<construtor-arg>标签换成了<property></p>
+<ul>
+<li>
+<p>常规用法</p>
+<pre><code class="language-xml">&lt;bean id=&quot;xx&quot; class=&quot;&quot; /&gt;
+&lt;bean class=&quot;com.test.XXX&quot;&gt;
+	&lt;property name=&quot;age&quot; value=&quot;45&quot; /&gt;
+    &lt;property name=&quot;x&quot; ref=&quot;xx&quot; /&gt;  &lt;!-- 注入引用的bean --&gt;
+    &lt;property name=&quot;&quot;&gt;	&lt;!-- 注入内部bean --&gt;
+    	&lt;bean&gt;&lt;/bean&gt;
+    &lt;/property&gt;
+    &lt;property name=&quot;&quot;&gt;	&lt;!-- 注入list类型构造参数 --&gt;
+    	&lt;list&gt;
+        	
+        &lt;/list&gt;
+    &lt;/property&gt;
+    ....
+&lt;/bean&gt;
+</code></pre>
+</li>
+<li>
+<p>p命名空间简写</p>
+<pre><code class="language-xml">&lt;bean id=&quot;xx&quot; class=&quot;&quot; /&gt;
+&lt;bean class=&quot;com.test.XXX&quot; p:age=&quot;45&quot; p:x-ref=&quot;xx&quot; /&gt;
+</code></pre>
+</li>
+</ul>
+<h3 id="开启自动装配">开启自动装配</h3>
+<pre><code class="language-xml">&lt;!-- 
+通过给当前的bean添加autowire属性开启自动注入
+可选的值：参见自动装配章节
+ --&gt;
+&lt;bean id=&quot;xx&quot; class=&quot;&quot; autowire=&quot;&quot; /&gt;
+</code></pre>
+<h3 id="提高自动装配时的权重">提高自动装配时的权重</h3>
+<pre><code class="language-xml">&lt;!-- 当其他的bean中需要注入一个Test类型的属性，而满足条件的bean有多个时，会优先注入primary=&quot;true&quot;的bean --&gt;
+&lt;bean id=&quot;xx&quot; class=&quot;com.Test&quot; primary=&quot;true&quot; /&gt;
+</code></pre>
+<h3 id="按类型自动装配时不参与候选">按类型自动装配时，不参与候选</h3>
+<pre><code class="language-xml">&lt;!-- 当其他的bean中需要注入一个Test类型的属性，而满足条件的bean有多个时，autowire-candidate=&quot;false&quot;的bean会自动退出候选序列 --&gt;
+&lt;bean id=&quot;xx&quot; class=&quot;com.Test&quot; autowire-candidate=&quot;false&quot; /&gt;
+</code></pre>
+<h2 id="注解方式的di">注解方式的DI</h2>
+<ul>
+<li>
+<p>构造参数注入</p>
+<p>在构造方法上添加 <code>@Autowired</code>注解，构造方法的参数就会自动注入进来</p>
+</li>
+<li>
+<p>setter方法注入</p>
+<p>方法有两种：</p>
+<ol>
+<li>在属性的setter方法上添加<code>@Autowired</code>注解</li>
+<li>在属性上添加<code>@Autowired</code>注解</li>
+</ol>
+</li>
+</ul>
+<h3 id="提高自动装配时的权重-2">提高自动装配时的权重</h3>
+<pre><code class="language-java">@Primary
+@Component
+public class Test {
+
+
+}
+
+public class Main {
+    
+    @Primary
+    @Bean
+    public void test() {
+        return new Test();
+    }
+    
+}
+</code></pre>
+<h1 id="springaop">SpringAOP</h1>
+<h2 id="概述-2">概述</h2>
+<p>AOP的全称是Aspect Oriented  Programming(面向切面编程)</p>
+<p>OOP语言提供了类与类之间纵向的关系（继承、接口），而AOP补充了横向的关系（比如在不改变目标类中源代码的情况下给com.john.demo.dao包下所有类中以insert和update开头的方法添加事务管理）</p>
+<h3 id="springaop和aspectj的区别">SpringAOP和AspectJ的区别</h3>
+<p>AspectJ是一个专门主打面向切面编程的框架。 它是使用一种特殊的语言(扩展自Java语言)来编写切面代码，后缀是.aj格式，并且需要使用专门的编译器将其编译成jvm可以运行的class文件。</p>
+<p>SpringAOP底层也是使用了AspectJ的方案，但是在上层做了很多封装层面的工作，可以让开发人员直接使用Java代码来编写切面。并且由于使用的是标准的Java语言，所以并不需要在额外安装一个专门的编译器。但是由于开发人员直接接触的是Spring AOP，那么凡是Spring中没有实现的那些AOP功能，我们就用不了了，这种情况下只能跟产品经理撕逼或者去学习原生的AspectJ。</p>
+<h2 id="aop的术语">AOP的术语</h2>
+<ul>
+<li>
+<p>切面（Aspect）</p>
+<p>简单来说，切面就是我们要往目标代码中插入进去的代码。</p>
+</li>
+<li>
+<p>连接点（Join Pointer）</p>
+<p>理论上所有可能会被切入的地方都可以称之为连接点</p>
+</li>
+<li>
+<p>切入点(Pointcut)</p>
+<p>选择某个连接点切入，将切面代码织入进去。这个连接点就叫做切入点。</p>
+</li>
+<li>
+<p>织入(Weaving)</p>
+<p>把切面代码糅合到目标代码中的过程就是织入。</p>
+</li>
+<li>
+<p>通知(Advice)</p>
+<p>通知决定了切面代码织入到目标代码中后，运行的时机(比如是在目标方法执行前，还是执行后)。</p>
+</li>
+</ul>
+<h2 id="在spring中使用aop">在Spring中使用AOP</h2>
+<h3 id="基于xml方式使用">基于XML方式使用</h3>
+<ol>
+<li>
+<p>把aop的schema引入</p>
+<pre><code class="language-xml">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;
+</code></pre>
+</li>
+<li>
+<p>创建一个切面类，并且以bean的方式配置到IOC容器中</p>
+<pre><code class="language-java">package com.lanou3g.spring;
+public class MyAspect {
+
+    public void wakeup() {
+        System.out.println(&quot;[前置通知]我刚学习SpringAOP睡着了，刚才谁打了我一下？&quot;);
+    }
+
+
+    public void goToBed() {
+        System.out.println(&quot;[后置通知]SpringAOP太难了，一不小心又睡着了&quot;);
+    }
+
+
+    public void afterRetuing(Object message) {
+        System.out.println(&quot;[后置返回通知]方法执行已经return了，方法返回值是：&quot; + message);
+    }
+
+    public void afterThrowing(Throwable ex) {
+        System.out.println(&quot;[后置异常通知]方法执行出现异常，异常原因：&quot; + ex.getMessage());
+    }
+
+    /**
+     * 环绕通知
+     * 可以接受一个ProceedingJoinPoint参数
+     *      通过此参数可以获取到被切入方法的所有信息
+     *      还可以通过此参数来决定是否调用目标方法
+     */
+    public void aroundAdvice(ProceedingJoinPoint joinPoint) {
+
+        // 连接点参数可以获取到被切入方法的所有信息
+        // 这里演示了如何获取被切入方法的名称
+        String targetMethodName = joinPoint.getSignature().getName();
+        System.out.println(&quot;[环绕通知]被切入的方法名：&quot; + targetMethodName);
+
+        //
+        System.out.println(&quot;[环绕通知]即将开始新的一天， 早起的鸟儿有虫吃！&quot;);
+        try {
+            joinPoint.proceed();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        System.out.println(&quot;[环绕通知]这真是充实的一天， 早睡早起，方能养生！&quot;);
+    }
+}
+</code></pre>
+<pre><code class="language-xml">&lt;bean id=&quot;myAspect&quot; class=&quot;com.lanou3g.spring.MyAspect&quot; /&gt;
+</code></pre>
+</li>
+<li>
+<p>使用<a href="aop:config">aop:config</a>标签配置aop（将切面、切入点、通知结合到一起）</p>
+<ol>
+<li>定义切入点表达式</li>
+<li><a href="aop:aspect">aop:aspect</a>
+<ol>
+<li>引用外部定义的切面bean</li>
+<li>配置通知，引用切入点表达式</li>
+</ol>
+</li>
+</ol>
+<pre><code class="language-xml">&lt;aop:config&gt;
+    &lt;!-- 切入点表示匹配com.lanou3g.spring包下的所有类中所有以oneDay开头的方法，方法的参数、返回值不限 --&gt;
+	&lt;aop:pointcut id=&quot;myPointcut&quot; expression=&quot;execution(* com.lanou3g.spring..*.oneDay*(..))&quot; /&gt;
+    &lt;aop:aspect ref=&quot;myAspect&quot;&gt;
+    	&lt;!-- 无论是否出现异常，只要被切入的方法开始运行，都会触发此通知 --&gt;
+            &lt;aop:before method=&quot;wakeup&quot; pointcut-ref=&quot;beforeOneDay&quot; /&gt;
+            &lt;!-- 无论是否出现异常，只要被切入的方法运行结束，都会触发此通知 --&gt;
+            &lt;aop:after method=&quot;goToBed&quot; pointcut-ref=&quot;beforeOneDay&quot; /&gt;
+            &lt;!--
+            可以最大限度的对被切入方法附加功能，在方法执行前、后都可以通知（无论是否出现异常）
+            ，还可以获取到被切入方法的所有信息，包括是否调用被切入的方法
+            --&gt;
+            &lt;aop:around method=&quot;aroundAdvice&quot; pointcut-ref=&quot;beforeOneDay&quot; /&gt;
+            &lt;!-- 被切入的方法正常返回值以后，会触发此通知 --&gt;
+            &lt;aop:after-returning method=&quot;afterRetuing&quot; pointcut-ref=&quot;beforeOneDay&quot; returning=&quot;message&quot; /&gt;
+            &lt;!-- 被切入的方法抛出异常以后，会触发此通知，并且不会触发after-returning --&gt;
+            &lt;aop:after-throwing method=&quot;afterThrowing&quot; pointcut-ref=&quot;beforeOneDay&quot; throwing=&quot;ex&quot; /&gt;
+    &lt;/aop:aspect&gt;
+&lt;/aop:config&gt;
+</code></pre>
+</li>
+</ol>
+<h3 id="基于注解方式使用">基于注解方式使用</h3>
+<ol>
+<li>
+<p>开启AOP注解支持</p>
+<p>方式一：注解的方式</p>
+<pre><code class="language-xml">@Configuration
+@EnableAspectJAutoProxy
+public class AppConfig {
+
+}
+</code></pre>
+<p>方式二：xml中开启</p>
+<pre><code class="language-xml">&lt;aop:aspectj-autoproxy/&gt;
+</code></pre>
+<ol start="2">
+<li>定义切面类</li>
+</ol>
+<pre><code class="language-java">/**
+ * 该切面用来插入起床的逻辑
+ */
+@Aspect
+@Component  //@Aspect注解没有将bean交给ioc容器管理的功能
+public class MyAspect {
+
+    @Before(&quot;com.lanou3g.spring.aop.MyPointcut.allOneDayMehtod()&quot;)
+    public void wakeup() {
+        System.out.println(&quot;[前置通知]我刚学习SpringAOP睡着了，刚才谁打了我一下？&quot;);
+    }
+
+    @After(&quot;com.lanou3g.spring.aop.MyPointcut.allOneDayMehtod()&quot;)
+    public void goToBed() {
+        System.out.println(&quot;[后置通知]SpringAOP太难了，一不小心又睡着了&quot;);
+    }
+
+    @AfterReturning(value = &quot;com.lanou3g.spring.aop.MyPointcut.allOneDayMehtod()&quot;, returning = &quot;message&quot;)
+    public void afterRetuing(Object message) {
+        System.out.println(&quot;[后置返回通知]方法执行已经return了，方法返回值是：&quot; + message);
+    }
+
+    @AfterThrowing(value = &quot;com.lanou3g.spring.aop.MyPointcut.allOneDayMehtod()&quot;, throwing = &quot;ex&quot;)
+    public void afterThrowing(Throwable ex) {
+        System.out.println(&quot;[后置异常通知]方法执行出现异常，异常原因：&quot; + ex.getMessage());
+    }
+
+    /**
+     * 环绕通知
+     * 可以接受一个ProceedingJoinPoint参数
+     *      通过此参数可以获取到被切入方法的所有信息
+     *      还可以通过此参数来决定是否调用目标方法
+     */
+//    @Around(&quot;com.lanou3g.spring.aop.MyPointcut.allOneDayMehtod()&quot;)
+    public Object aroundAdvice(ProceedingJoinPoint joinPoint) {
+
+        // 连接点参数可以获取到被切入方法的所有信息
+        // 这里演示了如何获取被切入方法的名称
+        String targetMethodName = joinPoint.getSignature().getName();
+        System.out.println(&quot;[环绕通知]被切入的方法名：&quot; + targetMethodName);
+
+        //
+        System.out.println(&quot;[环绕通知]即将开始新的一天， 早起的鸟儿有虫吃！&quot;);
+        Object ret = null;
+        try {
+            ret = joinPoint.proceed();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        System.out.println(&quot;[环绕通知]这真是充实的一天， 早睡早起，方能养生！&quot;);
+        return ret;
+    }
+}
+</code></pre>
+<blockquote>
+<p>注意：@Aspect注解没有将bean交给ioc容器管理的功能，我们需要额外添加一个@Component注解</p>
+</blockquote>
+<ol start="3">
+<li>定义切入点</li>
+</ol>
+<p>官方建议我们将所有的切入点统一定义到一个地方管理，在配置通知时通过引入的方式来使用。方便后期维护（一处修改，处处生效）</p>
+<pre><code class="language-java">@Component
+public class MyPointcut {
+    // 通过@Pointcut注解定义一个切入点
+    @Pointcut(&quot;execution(* oneDay(..))&quot;)
+    public void allOneDayMehtod() {}
+}
+</code></pre>
+<ol start="4">
+<li>在切面类中添加要切入的代码</li>
+</ol>
+<blockquote>
+<p>参见定义切面部分</p>
+</blockquote>
+<ol start="5">
+<li>在切入的代码方法上添加通知的注解</li>
+</ol>
+<blockquote>
+<p>参见定义切面部分</p>
+</blockquote>
+</li>
+</ol>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#springioc">SpringIOC</a>
+<ul>
+<li><a href="#ioc%E5%AE%B9%E5%99%A8%E6%A6%82%E5%BF%B5">IOC容器概念</a></li>
+<li><a href="#ioc%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%E6%96%B9%E5%BC%8F">IOC容器初始化方式</a>
+<ul>
+<li><a href="#classpathxmlapplicationcontext">ClassPathXmlApplicationContext</a></li>
+<li><a href="#annotationconfigapplicationcontext">AnnotationConfigApplicationContext</a></li>
+</ul>
+</li>
+<li><a href="#bean%E5%88%9D%E5%A7%8B%E5%8C%96%E6%96%B9%E5%BC%8F">Bean初始化方式</a>
+<ul>
+<li><a href="#%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95%E6%96%B9%E5%BC%8F%E6%9C%80%E5%B8%B8%E7%94%A8">构造方法方式（最常用）</a></li>
+<li><a href="#%E9%9D%99%E6%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95">静态工厂方法</a></li>
+<li><a href="#%E5%AE%9E%E4%BE%8B%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95">实例工厂方法</a></li>
+</ul>
+</li>
+<li><a href="#bean%E7%9A%84%E5%91%BD%E5%90%8D">Bean的命名</a></li>
+<li><a href="#bean%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F">Bean的作用域</a></li>
+<li><a href="#bean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F">Bean的生命周期</a></li>
+<li><a href="#bean%E6%87%92%E5%8A%A0%E8%BD%BD">Bean懒加载</a></li>
+<li><a href="#%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E7%9A%84%E5%81%9C%E6%AD%A2%E9%9D%9Eweb-spring%E5%BA%94%E7%94%A8">如何优雅的停止非Web Spring应用</a></li>
+</ul>
+</li>
+<li><a href="#spring-di">Spring DI</a>
+<ul>
+<li><a href="#%E6%A6%82%E8%BF%B0">概述</a></li>
+<li><a href="#di%E7%9A%84%E7%BB%86%E8%8A%82%E5%AE%9E%E7%8E%B0">DI的细节实现</a>
+<ul>
+<li><a href="#%E6%9E%84%E9%80%A0%E5%8F%82%E6%95%B0%E6%B3%A8%E5%85%A5">构造参数注入</a></li>
+<li><a href="#setter%E6%B3%A8%E5%85%A5">Setter注入</a></li>
+<li><a href="#%E6%94%AF%E6%8C%81%E6%B3%A8%E5%85%A5%E7%9A%84%E7%B1%BB%E5%9E%8B">支持注入的类型</a></li>
+<li><a href="#%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D">自动装配</a><br>
+*
+<ul>
+<li><a href="#%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E6%94%AF%E6%8C%81%E7%9A%84%E7%AD%96%E7%95%A5">自动装配支持的策略</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#xml%E6%96%B9%E5%BC%8F%E7%9A%84di">XML方式的DI</a>
+<ul>
+<li><a href="#%E6%9E%84%E9%80%A0%E5%8F%82%E6%95%B0%E6%B3%A8%E5%85%A5-2">构造参数注入</a></li>
+<li><a href="#setter%E6%96%B9%E5%BC%8F%E6%B3%A8%E5%85%A5">setter方式注入</a></li>
+<li><a href="#%E5%BC%80%E5%90%AF%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D">开启自动装配</a></li>
+<li><a href="#%E6%8F%90%E9%AB%98%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E6%97%B6%E7%9A%84%E6%9D%83%E9%87%8D">提高自动装配时的权重</a></li>
+<li><a href="#%E6%8C%89%E7%B1%BB%E5%9E%8B%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E6%97%B6%E4%B8%8D%E5%8F%82%E4%B8%8E%E5%80%99%E9%80%89">按类型自动装配时，不参与候选</a></li>
+</ul>
+</li>
+<li><a href="#%E6%B3%A8%E8%A7%A3%E6%96%B9%E5%BC%8F%E7%9A%84di">注解方式的DI</a>
+<ul>
+<li><a href="#%E6%8F%90%E9%AB%98%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E6%97%B6%E7%9A%84%E6%9D%83%E9%87%8D-2">提高自动装配时的权重</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#springaop">SpringAOP</a>
+<ul>
+<li><a href="#%E6%A6%82%E8%BF%B0-2">概述</a>
+<ul>
+<li><a href="#springaop%E5%92%8Caspectj%E7%9A%84%E5%8C%BA%E5%88%AB">SpringAOP和AspectJ的区别</a></li>
+</ul>
+</li>
+<li><a href="#aop%E7%9A%84%E6%9C%AF%E8%AF%AD">AOP的术语</a></li>
+<li><a href="#%E5%9C%A8spring%E4%B8%AD%E4%BD%BF%E7%94%A8aop">在Spring中使用AOP</a>
+<ul>
+<li><a href="#%E5%9F%BA%E4%BA%8Exml%E6%96%B9%E5%BC%8F%E4%BD%BF%E7%94%A8">基于XML方式使用</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E6%96%B9%E5%BC%8F%E4%BD%BF%E7%94%A8">基于注解方式使用</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://klein-moretti.github.io/post/java-chang-jian-yi-chang-zhuang-tai-ma">
+              <h3 class="post-title">
+                JAVA常见异常状态码
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '5f51923c9ec53cb563e3',
+    clientSecret: 'f9761a694a1efb19ea50e2c5c589dd76d15e775a',
+    repo: 'klein-moretti.github.io',
+    owner: 'klein-moretti',
+    admin: ['klein-moretti'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://klein-moretti.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
+
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>

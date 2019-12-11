@@ -1,0 +1,1002 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SpringMVC总结 | Gridea</title>
+<meta name="description" content="温故而知新" />
+<link rel="shortcut icon" href="https://klein-moretti.github.io/favicon.ico?v=1576066567699">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://klein-moretti.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://klein-moretti.github.io">
+  <img class="avatar" src="https://klein-moretti.github.io/images/avatar.png?v=1576066567699" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              SpringMVC总结
+            </h2>
+            <div class="post-info">
+              <span>
+                2018-07-31
+              </span>
+              <span>
+                25 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="springmvc">SpringMVC</h1>
+<h2 id="mvc设计模式">MVC设计模式</h2>
+<p>其实在之前JavaWeb阶段我们已经接触到了MVC模式。</p>
+<p>MVC里面的M指的的Model（通常包含bean、dao(mapper)、service）；V指的是View，视图层，视图层主要的技术（JSP、HTML、FreeMaker、Themeleaf）；C指的是Controller，控制层。控制层不负责具体数据、逻辑的处理和运算，它只负责将Model层的结果返回给对应的视图层去展示。</p>
+<p>在JavaWeb阶段， Controller层指的就是Servlet； View层指的就是JSP或者HTML;  Model层指的就是bean、dao、service。</p>
+<p>在J2EE阶段，Controller层指的就是SpringMVC、Structs1\2；  View层不变还是主流的页面展示技术; Model层包括bean、mybatis、service。</p>
+<h2 id="springmvc的优势">SpringMVC的优势</h2>
+<ul>
+<li>SpringMVC是一款很轻量级的框架，要使用它的组件我们往往只需要定义一些最简单的Java类，然后添加某些注解就可以了</li>
+<li>SpringMVC的参数注入只直接注入到方法中，可以很好的做到不同请求间数据的隔离，而Struts2是注入到类实例变量上，不同的请求可能会覆盖参数。</li>
+<li>SpringMVC可以很轻易的和Spring整合，而Struts需要做比较复杂的配置。</li>
+</ul>
+<h2 id="springmvc简单使用">SpringMVC简单使用</h2>
+<ol>
+<li>
+<p>添加依赖</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+    &lt;version&gt;5.2.0.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>在web.xml中配置DispatcherServlet</p>
+<pre><code class="language-xml">&lt;servlet&gt;
+    &lt;servlet-name&gt;aa&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+    &lt;!-- 指定SpringMVC 配置文件位置，DispatcherServlet初始化时会初始化Spring上下文（WebApplicationContext） --&gt;
+    &lt;!-- 默认配置文件寻找位置：/WEB-INF/{servlet-name}-servlet.xml，如果名字符合默认寻找规则，可以不指定配置文件路径 --&gt;
+    &lt;!--&lt;init-param&gt;
+      &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+      &lt;param-value&gt;/WEB-INF/aa-servlet.xml&lt;/param-value&gt;
+    &lt;/init-param&gt;--&gt;
+    &lt;!-- 配置容器启动时初始化DispatcherServlet --&gt;
+    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;aa&lt;/servlet-name&gt;
+    &lt;!-- 映射路径配置成/，代表当前Servlet是一个默认Servlet，就是当其他Servlet都无法处理请求时，由默认Servlet出马 --&gt;
+    &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+&lt;!--    &lt;url-pattern&gt;/*&lt;/url-pattern&gt;--&gt;
+  &lt;/servlet-mapping&gt;
+</code></pre>
+</li>
+<li>
+<p>配置SpringMVC  dispatcher-servlet.xml</p>
+<p>SpringMVC大部分组件都有默认配置，我们一般简单应用只需要指定视图解析器就行了</p>
+<p>dispatcher-servlet.xml</p>
+<pre><code class="language-xml">&lt;!-- 配置视图解析器，用于将Handler方法中返回的视图名解析成真正可展示的页面 --&gt;
+&lt;mvc:view-resolvers&gt;
+    &lt;bean class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
+        &lt;property name=&quot;prefix&quot; value=&quot;/&quot; /&gt;
+        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
+    &lt;/bean&gt;
+&lt;/mvc:view-resolvers&gt;
+</code></pre>
+</li>
+<li>
+<p>定义Controller</p>
+<p>新建一个普通类，然后添加<code>@Controller</code>注解，就可以了</p>
+</li>
+<li>
+<p>定义请求处理方法(Handler)</p>
+<p>在Controller类中定义一个普通的方法，添加<code>@RequestMapping</code>注解就可以了</p>
+</li>
+</ol>
+<h2 id="springmvc主要组件">SpringMVC主要组件</h2>
+<h3 id="rootapplicationcontext和servletapplicationcontext">RootApplicationContext和ServletApplicationContext</h3>
+<figure data-type="image" tabindex="1"><img src="https://docs.spring.io/spring/docs/5.2.0.RELEASE/spring-framework-reference/images/mvc-context-hierarchy.png" alt="父子上下文概念"></figure>
+<h4 id="两个applicationcontext的联系和区别">两个ApplicationContext的联系和区别</h4>
+<h3 id="视图解析器">视图解析器</h3>
+<p>视图解析器的作用是将请求处理方法中的返回值解析成一个真正可以渲染的页面。</p>
+<h4 id="常用的视图解析器">常用的视图解析器</h4>
+<ul>
+<li>
+<p>InternalResourceViewResolver</p>
+<p>内部资源解析器： 用于将返回值对应到项目路径下的某个可显示的页面。比如方法返回值是index字符串，那么<code>InternalResourceViewResolver</code>解析器会在index前加上指定的前缀，在index后加上指定的后缀来拼接成指向某个视图的路径。</p>
+<pre><code class="language-xml">&lt;!-- 配置视图解析器，用于将Handler方法中返回的视图名解析成真正可展示的页面 --&gt;
+&lt;mvc:view-resolvers&gt;
+    &lt;bean class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
+        &lt;property name=&quot;prefix&quot; value=&quot;/&quot; /&gt;
+        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;
+    &lt;/bean&gt;
+&lt;/mvc:view-resolvers&gt;
+</code></pre>
+</li>
+</ul>
+<h3 id="参数传递">参数传递</h3>
+<h4 id="页面参数传递到controller">页面参数传递到Controller</h4>
+<h5 id="requestparam">@RequestParam</h5>
+<p>获取请求参数，包括通过GET请求中的查询参数、POST请求中的参数等</p>
+<pre><code class="language-java">@RequestMapping(&quot;/hello&quot;)
+public String toHelloPage(@RequestParam String message, Model model) {
+	model.addAttribute(&quot;msg&quot;, message);
+	return &quot;hello_springmvc&quot;;
+}
+
+
+// 当方法参数名和请求参数不一样时，可以使用注解的参数对应起来
+@RequestMapping(&quot;/hello&quot;)
+public String toHelloPage(@RequestParam(&quot;message&quot;) String msg, Model model) {
+	model.addAttribute(&quot;msg&quot;, message);
+	return &quot;hello_springmvc&quot;;
+}
+</code></pre>
+<blockquote>
+<p>访问: http://localhost:8080/hello?message=zhangsan 时，message参数会自动注入到方法的message参数中。</p>
+</blockquote>
+<h5 id="requestheader">@RequestHeader</h5>
+<p>获取请求头中的参数，如浏览器默认自带的userAgent就是请求头参数</p>
+<pre><code class="language-java">@RequestMapping(&quot;/hello&quot;)
+public String toHelloPage(@RequestHeader String userAgent, Model model) {
+	model.addAttribute(&quot;msg&quot;, userAgent);
+	return &quot;hello_springmvc&quot;;
+}
+
+
+// 当方法参数名和请求头参数不一样时，可以使用注解的参数对应起来
+@RequestMapping(&quot;/hello&quot;)
+public String toHelloPage(@RequestHeader(&quot;userAgent&quot;) String ua, Model model) {
+	model.addAttribute(&quot;msg&quot;, ua);
+	return &quot;hello_springmvc&quot;;
+}
+</code></pre>
+<blockquote>
+<p>会自动将请求头中的userAgent参数注入到方法中</p>
+</blockquote>
+<h5 id="pathvariable">@PathVariable</h5>
+<p>获取请求地址中的参数，注入到方法参数中</p>
+<pre><code class="language-java">@RequestMapping(&quot;/hello/{sname}&quot;)
+public String toHelloPage(@PathVariable String sname, Model model) {
+	model.addAttribute(&quot;msg&quot;, sname);
+	return &quot;hello_springmvc&quot;;
+}
+
+
+// 当方法参数名和请求地址中参数不一样时，可以使用注解的参数对应起来
+@RequestMapping(&quot;/hello/{sname}&quot;)
+public String toHelloPage(@PathVariable(&quot;sname&quot;) String sn, Model model) {
+	model.addAttribute(&quot;msg&quot;, sn);
+	return &quot;hello_springmvc&quot;;
+}
+</code></pre>
+<blockquote>
+<p>访问：http://localhost:8080/hello/zhangsan  会自动将zhangsan注入到方法的参数中</p>
+</blockquote>
+<h5 id="requestattribute">@RequestAttribute</h5>
+<p>jsp中</p>
+<pre><code class="language-jsp">&lt;%
+        request.setAttribute(&quot;sname&quot;, &quot;虞姬req&quot;);
+        request.getRequestDispatcher(&quot;/param/req_scope&quot;).forward(request, response);
+%&gt;
+</code></pre>
+<p>Controller中</p>
+<pre><code class="language-java">/**
+  * 请求作用域中的参数的传递
+  * @return
+  */
+@RequestMapping(&quot;/req_scope&quot;)
+public String requestScopeParamShow(@RequestAttribute String sname, Model model) {
+    model.addAttribute(&quot;sname&quot;, sname);
+    model.addAttribute(&quot;type&quot;, &quot;请求作用域参数&quot;);
+    return &quot;param_show&quot;;
+}
+</code></pre>
+<blockquote>
+<p>获取请求作用域中的参数</p>
+</blockquote>
+<h5 id="sessionattribute">@SessionAttribute</h5>
+<blockquote>
+<p>获取Session作用域中的参数，用法和上面请求作用域中使用类似</p>
+</blockquote>
+<h5 id="cookievalue">@CookieValue</h5>
+<p>jsp中代码</p>
+<pre><code class="language-jsp">cookie参数传递：&lt;br /&gt;
+&lt;%
+response.addCookie(new Cookie(&quot;sname&quot;, &quot;yuji_cookie&quot;));
+%&gt;
+&lt;a href=&quot;/param/cookie&quot;&gt;发起请求&lt;/a&gt;
+</code></pre>
+<p>Controller中</p>
+<pre><code class="language-java">/**
+  * Cookie中的参数的传递
+  * @return
+  */
+@RequestMapping(&quot;/cookie&quot;)
+public String cookieParamShow(@CookieValue String sname, Model model) {
+    model.addAttribute(&quot;sname&quot;, sname);
+    model.addAttribute(&quot;type&quot;, &quot;cookie参数&quot;);
+    return &quot;param_show&quot;;
+}
+</code></pre>
+<blockquote>
+<p>获取Cookie中的指定数据</p>
+</blockquote>
+<blockquote>
+<p>上面这几个注解都是用于在方法的参数上标注，用于获取不同种类的参数</p>
+</blockquote>
+<h4 id="controller中的数据传递到页面">Controller中的数据传递到页面</h4>
+<h5 id="model">Model</h5>
+<p>handler方法定义：</p>
+<pre><code class="language-java">@RequestMapping(&quot;/show_msg&quot;)
+public String showMessage(Model model) {
+    model.addAttribute(&quot;msg&quot;, &quot;我是通过model传过来的参数&quot;);
+    return &quot;message_page&quot;;
+}
+</code></pre>
+<p>message_page.jsp</p>
+<pre><code class="language-jsp">&lt;h1&gt;
+    获取后台参数： ${msg}
+&lt;/h1&gt;
+</code></pre>
+<h5 id="modelandview">ModelAndView</h5>
+<pre><code class="language-java">/**
+ * ModelAndView其实是将数据Model和视图View做了一个封装，底层实现原理一样
+ */
+@RequestMapping(&quot;/show_msg&quot;)
+public ModelAndView showMessage(ModelAndView mv) {
+    mv.addObject(&quot;msg&quot;, &quot;我是通过model传过来的参数&quot;);
+    mv.setViewName(&quot;message_page&quot;);
+    return mv;
+}
+</code></pre>
+<blockquote>
+<p>Model和ModelAndView传递的参数本质上也是用请求作用域来实现的，所以仅对请求转发有效。</p>
+</blockquote>
+<h3 id="视图控制器">视图控制器</h3>
+<p>用于通过配置的方式简化我们项目中不含业务逻辑的页面跳转，省去了我们写一个空方法的步骤。</p>
+<h4 id="视图控制器的作用和用法">视图控制器的作用和用法</h4>
+<p>试想一下，如果我们的工程中有这样的一个需求，比如当用户点了某个链接和按钮的时候，我们需要做一个页面跳转，这个跳转的目标可能是一个公开目录的页面也可能是私有目录（/WEB-INF/下）的页面、还可能是跳转到后台Controller的某个方法中，我们如何实现？</p>
+<p>示例：比如我们想将登陆页设置为一个项目默认欢迎页面</p>
+<p>方案一：在Controller中添加一个拦截/的handler方法</p>
+<pre><code class="language-java">@RequestMapping(&quot;/&quot;)
+public String toWelcomePage() {
+    return &quot;login&quot;;
+}
+</code></pre>
+<p>方法二：使用视图控制器</p>
+<p>在dispatcher-servlet.xml（SpringMVC配置文件）配置中添加</p>
+<pre><code class="language-xml">&lt;mvc:view-controller path=&quot;/&quot; view-name=&quot;login&quot; /&gt;
+</code></pre>
+<ul>
+<li>path: 指定要匹配的访问路径</li>
+<li>view-name: 返回的逻辑视图名</li>
+<li>status-code: 设置响应状态码。(注：不能通过只设置状态码，不设置view-name实现只返回code，没有页面的处理)</li>
+</ul>
+<blockquote>
+<p>view-name不仅可以是逻辑视图名，还可以添加forward、redirect前缀，通过转发或重定向的方式跳转到一个具体的路径，如：&lt;mvc:view-controller path=&quot;/&quot; view-anme=&quot;forward:/WEB-INF/login.jsp&quot; /&gt;</p>
+</blockquote>
+<!-- SpringMVC 第二天 -->
+<h3 id="设置web项目的默认欢迎页">设置Web项目的默认欢迎页</h3>
+<ul>
+<li>
+<p>在web.xml中使用<welcome-file-list>标签指定</p>
+</li>
+<li>
+<p>使用上面提到的视图控制器</p>
+<pre><code class="language-xml">&lt;mvc:view-controller path=&quot;/&quot; view-name=&quot;逻辑视图名&quot; /&gt;
+&lt;!-- 当工程中存在Tomcat默认欢迎页同名文件时此种方式可能失效，比如index.html、index.jsp、index.htm --&gt;
+</code></pre>
+</li>
+</ul>
+<h3 id="静态资源处理">静态资源处理</h3>
+<pre><code class="language-xml">&lt;!-- 针对静态资源的处理 --&gt;
+    &lt;!-- http://localhost:8080/static/css/index.css --&gt;
+&lt;mvc:resources mapping=&quot;/static/**&quot; location=&quot;/static/&quot; /&gt;
+</code></pre>
+<h3 id="重定向和转发">重定向和转发</h3>
+<h4 id="在servlet实现重定向和转发">在Servlet实现重定向和转发：</h4>
+<p>重定向：response.sendRedirect(&quot;xxx.jsp&quot;);</p>
+<p>转发： request.getRequestDispatcher(&quot;xxx.jsp&quot;).forward(request, response);</p>
+<h4 id="在springmvc中">在SpringMVC中</h4>
+<h5 id="请求转发有三种方式">请求转发有三种方式</h5>
+<ul>
+<li>在Handler方法中直接返回逻辑视图名称</li>
+<li>在Handler方法中返回&quot;forward:路径&quot;</li>
+<li>在Handler方法中返回InternalResourceView对象</li>
+</ul>
+<blockquote>
+<p>其中第二种和第三种作用一样， 都是将路径用请求转发的方式跳转，返回的路径时不经过视图解析器处理的；而第一种虽然也是通过请求转发方式跳转，但是返回值会作为逻辑视图名称，经过视图解析器处理后，才渲染。</p>
+</blockquote>
+<h5 id="重定向有两种方式">重定向有两种方式</h5>
+<ul>
+<li>在Handler方法中返回&quot;redirect:路径&quot;</li>
+<li>在Handler方法中返回RedirectView对象</li>
+</ul>
+<blockquote>
+<p>这两种方法效果一样。 注意使用重定向的方式跳转页面，Model中的数据就无法带到页面了（因为Model底层也是用请求作用域来传递参数的）。</p>
+</blockquote>
+<h3 id="restfull服务接口开发">RESTFull服务接口开发</h3>
+<p>SpringMVC给我们提供了一系列的注解用于支持RESTFull风格的服务开发</p>
+<h4 id="常用restfull注解">常用RESTFull注解</h4>
+<ul>
+<li>
+<p><code>@RestController</code></p>
+<p>该注解本身是一个组合注解，由<code>@Controller</code>和<code>@ResponseBody</code>两个注解组成，所以拥有这两个注解的作用。 在类上声明后，该类会变成一个Controller类，同时，方法的返回值会作为响应体经过消息转换器直接响应给客户端，而不会将其作为视图渲染。</p>
+<pre><code class="language-java">@RestController // 这个注解其实是组合了下面两个注解的作用
+//@Controller
+//@ResponseBody
+public class UserRestController {
+
+}
+</code></pre>
+</li>
+<li>
+<p><code>@GetMapping</code> :</p>
+<p>作用： 申明当前handler方法只匹配GET请求</p>
+<p>使用示例</p>
+<pre><code class="language-java">@GetMapping(&quot;/{id}&quot;)
+public User getUserById(@PathVariable Integer id) {
+    return userService.findById(id);
+}
+</code></pre>
+</li>
+<li>
+<p><code>@PostMapping</code>: 申明当前handler方法只匹配POST请求</p>
+</li>
+<li>
+<p><code>@DeleteMapping</code>: 申明当前handler方法只匹配DELETE请求</p>
+</li>
+<li>
+<p><code>@PutMapping</code>: 申明当前handler方法只匹配PUT请求</p>
+</li>
+</ul>
+<blockquote>
+<p>上面四个注解分别对应HTTP的一种请求方法，使用方法类似。</p>
+</blockquote>
+<p>上面四个注解其实是一种快捷注解， 等效于使用下面代码：</p>
+<pre><code class="language-java">@RequestMapping(value = &quot;/user&quot;, method = RequestMethod.GET)
+@RequestMapping(value = &quot;/user&quot;, method = RequestMethod.POST)
+@RequestMapping(value = &quot;/user&quot;, method = RequestMethod.PUT)
+@RequestMapping(value = &quot;/user&quot;, method = RequestMethod.DELETE)
+</code></pre>
+<ul>
+<li>@PathVariable: 获取请求地址中的变量，注入到方法参数中</li>
+</ul>
+<h4 id="返回json格式的数据-消息转换器">返回JSON格式的数据 —— 消息转换器</h4>
+<h5 id="消息转换器是什么">消息转换器是什么</h5>
+<p>之前我们在写普通Controller时，handler方法的返回值要是就是一个String（逻辑视图名），要么就是一个ModelAndView、View对象。</p>
+<p>而我们使用了RestController之后，方法的返回值已经不会被作为视图去渲染了，这时候我们的方法其实可以返回任意类型的数据。这些数据会直接通过响应体以流的方式返回给客户端。</p>
+<p>我们知道Java中的对象是不能直接用流的方式读取的，需要序列化。比如我们的handler方法返回了一个User类型，SpringMVC就不知道如果将这个类型返回给客户端了。这时就需要我们通过配置消息转换器来完成这种类型对象的返回处理。 而在RESTFull服务中，对象绝大部分传递方式就是通过JSON格式。</p>
+<h5 id="如何配置一个转换json格式的消息转换器">如何配置一个转换JSON格式的消息转换器</h5>
+<ul>
+<li>
+<p>使用SpringMVC默认的Jackson库</p>
+<ol>
+<li>
+<p>引入依赖</p>
+<pre><code class="language-xml">&lt;!-- jackson依赖，用于将handler方法返回的对象直接转换成JSON数据 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+    &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+    &lt;version&gt;2.9.7&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>开启mvc注解支持</p>
+<pre><code class="language-xml">&lt;mvc:annotation-driven /&gt;
+</code></pre>
+</li>
+<li>
+<p>定义Controller类</p>
+<pre><code class="language-java">@RestController
+@RequestMapping(&quot;/user&quot;)
+public class UserRestController {
+    
+    @GetMapping(&quot;/{id}&quot;)
+    public User getUserById(Integer id) {
+        return userService.findById(id);
+    }
+    
+}
+</code></pre>
+</li>
+</ol>
+<blockquote>
+<p>Jackson是SpringMVC默认的JSON格式消息转换器， 所以在不配置额外转json参数时，我们可以直接只引入jackson依赖，再开启mvc直接支持就可以了。而第三方的转换库如FastJSON就必须显示配置MessageConverter</p>
+</blockquote>
+</li>
+<li>
+<p>使用阿里巴巴的FastJSON库</p>
+<ol>
+<li>
+<p>引入依赖</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+     &lt;groupId&gt;com.alibaba&lt;/groupId&gt;
+     &lt;artifactId&gt;fastjson&lt;/artifactId&gt;
+     &lt;version&gt;1.2.57&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>配置MessageConverter</p>
+<pre><code class="language-xml">&lt;mvc:annotation-driven&gt;
+    &lt;mvc:message-converters&gt;
+        &lt;bean class=&quot;com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter&quot;&gt;
+            &lt;property name=&quot;defaultCharset&quot; value=&quot;UTF-8&quot; /&gt;
+            &lt;property name=&quot;fastJsonConfig&quot;&gt;
+                &lt;!-- 设置转换JSON的参数 --&gt;
+                &lt;bean class=&quot;com.alibaba.fastjson.support.config.FastJsonConfig&quot;&gt;
+                    &lt;property name=&quot;dateFormat&quot; value=&quot;yyyy-MM-dd HH:mm:ss&quot; /&gt;
+                &lt;/bean&gt;
+            &lt;/property&gt;
+            &lt;property name=&quot;supportedMediaTypes&quot;&gt;
+            &lt;!-- 指定转换完JSON后返回的响应头和编码，添加text/html是为了处理在IE下application/json会弹出下载框问题 --&gt;
+                &lt;list&gt;
+                    &lt;!--&lt;value&gt;text/html;charset=UTF-8&lt;/value&gt;--&gt;                
+                    &lt;value&gt;application/json;charset=UTF-8&lt;/value&gt;
+                &lt;/list&gt;
+            &lt;/property&gt;
+        &lt;/bean&gt;
+    &lt;/mvc:message-converters&gt;
+&lt;/mvc:annotation-driven&gt;
+</code></pre>
+</li>
+<li>
+<p>定义Controller类</p>
+<pre><code class="language-java">@RestController
+@RequestMapping(&quot;/user&quot;)
+public class UserRestController {
+    
+    @GetMapping(&quot;/{id}&quot;)
+    public User getUserById(Integer id) {
+        return userService.findById(id);
+    }
+    
+}
+</code></pre>
+</li>
+</ol>
+</li>
+</ul>
+<h4 id="通过网页模拟restfull请求">通过网页模拟RESTFull请求</h4>
+<p>通过SpringMVC给我们提供的一个过滤器，我们可以用表单模拟各种RESTFull的请求，使用方法如下：</p>
+<ol>
+<li>
+<p>在web.xml中添加过滤器</p>
+<pre><code class="language-xml">&lt;filter&gt;
+    &lt;filter-name&gt;httpMethodFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;org.springframework.web.filter.HiddenHttpMethodFilter&lt;/filter-class&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+    &lt;filter-name&gt;httpMethodFilter&lt;/filter-name&gt;
+    &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;
+</code></pre>
+</li>
+<li>
+<p>在表单中添加name为_method的hidden域，并将表单的method设置为post</p>
+<pre><code class="language-html">&lt;!-- 使用表单模拟发起一个DELETE请求，删除user表中id为57的数据 --&gt;
+&lt;form action=&quot;/user/57&quot; method=&quot;post&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;_method&quot; value=&quot;delete&quot; /&gt;
+    &lt;input type=&quot;number&quot; name=&quot;id&quot; /&gt;
+    &lt;input type=&quot;text&quot; name=&quot;username&quot; /&gt;
+    &lt;input type=&quot;submit&quot; /&gt;
+&lt;/form&gt;
+</code></pre>
+</li>
+</ol>
+<blockquote>
+<p>由于RESTFull请求通常发生在服务于服务之间的调用，所以有些请求用浏览器不太好模拟，建议使用专业的网络测试工具postman来进行测试。</p>
+</blockquote>
+<h4 id="resttemplate工具类">RestTemplate工具类</h4>
+<p>SpringMVC帮我们封装的一个Rest请求工具，可以使用一个URI地址发起网络请求，并且将结果封装成一个指定的对象。</p>
+<h3 id="处理请求乱码">处理请求乱码</h3>
+<p>SpringMVC给我们提供了一个专门用来解决post请求乱码的过滤器，我们只需将其配置到web.xml中，就可以避免post请求乱码，免去了我们自己写过滤器的麻烦</p>
+<p>在web.xml中</p>
+<pre><code class="language-xml">&lt;!-- 解决POST请求乱码 --&gt;
+&lt;filter&gt;
+    &lt;filter-name&gt;encodingFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;encoding&lt;/param-name&gt;
+        &lt;param-value&gt;UTF-8&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;forceEncoding&lt;/param-name&gt;
+        &lt;param-value&gt;true&lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+    &lt;filter-name&gt;encodingFilter&lt;/filter-name&gt;
+    &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;
+</code></pre>
+<blockquote>
+<p>注意： 如果项目中配置了多个过滤器，建议将此过滤器放到所有过滤器的最上面。</p>
+</blockquote>
+<h3 id="在springmvc方法中支持的参数">在SpringMVC方法中支持的参数</h3>
+<p>SpringMVC的handler方法中支持诸如很多特殊类型的参数，常用的有</p>
+<h5 id="注入原生servlet对象">注入原生Servlet对象</h5>
+<ul>
+<li>javax.servlet.ServletRequest</li>
+<li>javax.servlet.ServletResponse</li>
+<li>javax.serlvet.http.HttpSession</li>
+</ul>
+<h5 id="以流的方式读取请求体-以流的方式响应到客户端">以流的方式读取请求体、以流的方式响应到客户端</h5>
+<ul>
+<li><s>java.io.InputStream、java.io.Reader</s></li>
+<li><s>java.io.OutputStream、java.io.Writer</s></li>
+</ul>
+<h5 id="读取请求体和请求头数据">读取请求体和请求头数据</h5>
+<ul>
+<li>HttpEntity</li>
+</ul>
+<h5 id="向页面传参">向页面传参</h5>
+<ul>
+<li>java.util.Map，org.springframework.ui.Model、org.springframework.ui.ModelMap</li>
+</ul>
+<!-- SpringMVC 第三天 -->
+<h3 id="文件上传">文件上传</h3>
+<h4 id="说明">说明</h4>
+<p>在Java中，主流的文件上传方式有两种，分别是通用文件上传(commons-fileupload)和Servlet3.0方式的文件上传。SpringMVC分别对着两种方式都做了支持。</p>
+<ul>
+<li>CommonsMultipartResolver</li>
+<li>StandardServletMultipartResolver</li>
+</ul>
+<blockquote>
+<p>除此之外SpringMVC对文件上传的接口做了统一的封装，使用<code>MultipartFile</code>接口代替了通用上传中的<code>FileItem</code>和Servlet3.0中的<code>Part</code>，使得开发人员在业务代码中可以使用统一的接口处理，而不用管底层用的是哪种文件上传实现方式。</p>
+</blockquote>
+<h4 id="基于apache-fileupload通用文件上传包">基于Apache Fileupload通用文件上传包</h4>
+<ol>
+<li>
+<p>添加依赖</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;commons-fileupload&lt;/groupId&gt;
+    &lt;artifactId&gt;commons-fileupload&lt;/artifactId&gt;
+    &lt;version&gt;1.4&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;commons-io&lt;/groupId&gt;
+    &lt;artifactId&gt;commons-io&lt;/artifactId&gt;
+    &lt;version&gt;2.6&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>在SpringMVC配置文件中添加MultipartResolver文件上传解析器</p>
+<pre><code class="language-xml">&lt;!-- 配置基于apache fileupload的通用文件上传器（注意：id属性不可省略） --&gt;
+&lt;bean id=&quot;multipartResolver&quot; class=&quot;org.springframework.web.multipart.commons.CommonsMultipartResolver&quot;&gt;
+    &lt;!-- 指定文件上传编码 --&gt;
+    &lt;property name=&quot;defaultEncoding&quot; value=&quot;UTF-8&quot; /&gt;
+&lt;/bean&gt;
+</code></pre>
+</li>
+<li>
+<p>在Controller中编写文件上传逻辑代码</p>
+<pre><code class="language-java">@RequestMapping(&quot;/upload&quot;)
+public String upload(@RequestParam(&quot;myFile&quot;) MultipartFile file, HttpServletRequest req, Model model) {
+    try {
+        // 使用SpringMVC给我们提供的工具类获取项目中upload文件夹在硬盘上的绝对路径
+        String uploadPath = WebUtils.getRealPath(req.getServletContext(), &quot;/upload/&quot;);
+        // 将上传的文件写到上传目录
+        file.transferTo(new File(uploadPath+file.getOriginalFilename()));
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+</code></pre>
+</li>
+</ol>
+<h4 id="基于servlet30标准api文件上传">基于Servlet3.0标准API文件上传</h4>
+<ol>
+<li>
+<p>开启Servlet文件上传支持</p>
+<p>web.xml</p>
+<pre><code class="language-xml">&lt;servlet&gt;
+    &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+    &lt;!-- 开启Servlet文件上传支持 --&gt;
+    &lt;multipart-config /&gt;
+&lt;/servlet&gt;
+&lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;
+</code></pre>
+</li>
+<li>
+<p>在SpringMVC中配置MultipartResolver</p>
+<pre><code class="language-xml">&lt;!-- 配置基于Servlet3.0文件上传器（注意：id属性不可省略） --&gt;
+&lt;bean id=&quot;multipartResolver&quot; class=&quot;org.springframework.web.multipart.support.StandardServletMultipartResolver&quot; /&gt;
+</code></pre>
+</li>
+<li>
+<p>在Controller中编写文件上传逻辑代码</p>
+<blockquote>
+<p>实现方式同通用上传代码一样。</p>
+</blockquote>
+</li>
+</ol>
+<h4 id="文件名上传乱码问题">文件名上传乱码问题</h4>
+<ul>
+<li>
+<p>使用通用上传方式的解决方法</p>
+<p>在配置的CommonsMultipartResolver bean中注入属性</p>
+<pre><code class="language-xml">&lt;!-- 配置基于apache fileupload的通用文件上传器（注意：id属性不可省略） --&gt;
+&lt;bean id=&quot;multipartResolver&quot; class=&quot;org.springframework.web.multipart.commons.CommonsMultipartResolver&quot;&gt;
+    &lt;!-- 指定文件上传编码 --&gt;
+    &lt;property name=&quot;defaultEncoding&quot; value=&quot;UTF-8&quot; /&gt;
+&lt;/bean&gt;
+</code></pre>
+</li>
+<li>
+<p>使用Servlet3.0标准上传方式的解决方法</p>
+<p>通过配置SpringMVC提供的编码过滤器解决</p>
+<p>web.xml</p>
+<pre><code class="language-xml">&lt;filter&gt;
+    &lt;filter-name&gt;characterFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;encoding&lt;/param-name&gt;
+        &lt;param-value&gt;UTF-8&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;forceEncoding&lt;/param-name&gt;
+        &lt;param-value&gt;true&lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+    &lt;filter-name&gt;characterFilter&lt;/filter-name&gt;
+    &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;
+</code></pre>
+<blockquote>
+<p>本质上还是设置请求的编码 request.setCharacterEncoding(&quot;UTF-8&quot;);</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="拦截器">拦截器</h3>
+<h4 id="拦截器-vs-过滤器">拦截器 VS 过滤器</h4>
+<p>过滤器是Servlet规范中提供的一项技术。不依赖于任何第三方框架。它的作用主要用来做两件事： 加工请求、过滤请求。</p>
+<p>拦截器是SpringMVC自己封装的一项基于Handler拦截的结束。也就是说只有在SpringMVC框架里面才有拦截器的概念。拦截器拦截的对象是Handler。它的全称是 HandlerInterceptor。</p>
+<p>加上拦截器以后，请求处理流程：  request -&gt; DispatcherServlet -&gt; HandlerMapping -&gt; HandlerExecutionChain(包含了目标handler和若干个拦截器) -&gt; HandlerAdapter -&gt; 循环调用HandlerExecutionChain对象中所有拦截器的prehandler方法 -&gt; 如果preHandler返回false，那么handler将不会被调用。反之，才会正常调用。</p>
+<h4 id="如何使用拦截器">如何使用拦截器</h4>
+<h5 id="定义拦截器类">定义拦截器类</h5>
+<p>新建一个类实现HandlerInterceptor接口</p>
+<pre><code class="language-java">/**
+ * 定义拦截器步骤：
+ *      1. 定义一个普通类，实现HandlerInterceptor接口
+ *      2. 按需实现接口中的方法
+ *      3. 在SpringMVC配置文件中通过&lt;mvc:interceptors&gt;&lt;/mvc:interceptors&gt;配置拦截器
+ */
+public class NotAllowedInterceptor implements HandlerInterceptor {
+
+    /**
+     * 此回调方法在执行Handler之前被调用
+     * @param request
+     * @param response
+     * @param handler
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        System.out.println(&quot;进入NotAllowedInterceptor, 凡是我能拦截到的请求，一律不准通过!&quot;);
+        return false;
+    }
+
+    /**
+     * 此回调方法在执行Handler之后被调用
+     * @param request
+     * @param response
+     * @param handler
+     * @param modelAndView
+     * @throws Exception
+     */
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+
+    }
+
+    /**
+     * 此回调方法在DispatcherServlet最终响应之前被调用
+     * @param request
+     * @param response
+     * @param handler
+     * @param ex
+     * @throws Exception
+     */
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+
+    }
+}
+</code></pre>
+<h5 id="配置拦截器">配置拦截器</h5>
+<h6 id="全局拦截器">全局拦截器</h6>
+<pre><code class="language-xml">&lt;mvc:interceptors&gt;
+    &lt;!-- 这种方式配置的拦截器会拦截所有请求 --&gt;
+    &lt;bean class=&quot;com.lanou3g.springmvc.interceptor.NotAllowedInterceptor&quot; /&gt;
+&lt;/mvc:interceptors&gt;
+</code></pre>
+<h6 id="拦截指定请求的拦截器">拦截指定请求的拦截器</h6>
+<pre><code class="language-xml">&lt;mvc:interceptors&gt;
+    &lt;mvc:interceptor&gt;
+        &lt;!-- 拦截的请求 --&gt;
+        &lt;mvc:mapping path=&quot;/admin/**&quot; /&gt;
+        &lt;!-- 不拦截的请求 --&gt;
+        &lt;mvc:exclude-mapping path=&quot;/intercepor/**&quot;/&gt;
+        &lt;!-- 配置我们定义的实现了HandlerInterceptor接口的类 --&gt;
+        &lt;bean class=&quot;com.lanou3g.springmvc.interceptor.NotAllowedInterceptor&quot; /&gt;
+    &lt;/mvc:interceptor&gt;
+&lt;/mvc:interceptors&gt;
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#springmvc">SpringMVC</a>
+<ul>
+<li><a href="#mvc%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F">MVC设计模式</a></li>
+<li><a href="#springmvc%E7%9A%84%E4%BC%98%E5%8A%BF">SpringMVC的优势</a></li>
+<li><a href="#springmvc%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8">SpringMVC简单使用</a></li>
+<li><a href="#springmvc%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6">SpringMVC主要组件</a>
+<ul>
+<li><a href="#rootapplicationcontext%E5%92%8Cservletapplicationcontext">RootApplicationContext和ServletApplicationContext</a>
+<ul>
+<li><a href="#%E4%B8%A4%E4%B8%AAapplicationcontext%E7%9A%84%E8%81%94%E7%B3%BB%E5%92%8C%E5%8C%BA%E5%88%AB">两个ApplicationContext的联系和区别</a></li>
+</ul>
+</li>
+<li><a href="#%E8%A7%86%E5%9B%BE%E8%A7%A3%E6%9E%90%E5%99%A8">视图解析器</a>
+<ul>
+<li><a href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E8%A7%86%E5%9B%BE%E8%A7%A3%E6%9E%90%E5%99%A8">常用的视图解析器</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92">参数传递</a>
+<ul>
+<li><a href="#%E9%A1%B5%E9%9D%A2%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92%E5%88%B0controller">页面参数传递到Controller</a>
+<ul>
+<li><a href="#requestparam">@RequestParam</a></li>
+<li><a href="#requestheader">@RequestHeader</a></li>
+<li><a href="#pathvariable">@PathVariable</a></li>
+<li><a href="#requestattribute">@RequestAttribute</a></li>
+<li><a href="#sessionattribute">@SessionAttribute</a></li>
+<li><a href="#cookievalue">@CookieValue</a></li>
+</ul>
+</li>
+<li><a href="#controller%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E4%BC%A0%E9%80%92%E5%88%B0%E9%A1%B5%E9%9D%A2">Controller中的数据传递到页面</a>
+<ul>
+<li><a href="#model">Model</a></li>
+<li><a href="#modelandview">ModelAndView</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E8%A7%86%E5%9B%BE%E6%8E%A7%E5%88%B6%E5%99%A8">视图控制器</a>
+<ul>
+<li><a href="#%E8%A7%86%E5%9B%BE%E6%8E%A7%E5%88%B6%E5%99%A8%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E7%94%A8%E6%B3%95">视图控制器的作用和用法</a></li>
+</ul>
+</li>
+<li><a href="#%E8%AE%BE%E7%BD%AEweb%E9%A1%B9%E7%9B%AE%E7%9A%84%E9%BB%98%E8%AE%A4%E6%AC%A2%E8%BF%8E%E9%A1%B5">设置Web项目的默认欢迎页</a></li>
+<li><a href="#%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E5%A4%84%E7%90%86">静态资源处理</a></li>
+<li><a href="#%E9%87%8D%E5%AE%9A%E5%90%91%E5%92%8C%E8%BD%AC%E5%8F%91">重定向和转发</a>
+<ul>
+<li><a href="#%E5%9C%A8servlet%E5%AE%9E%E7%8E%B0%E9%87%8D%E5%AE%9A%E5%90%91%E5%92%8C%E8%BD%AC%E5%8F%91">在Servlet实现重定向和转发：</a></li>
+<li><a href="#%E5%9C%A8springmvc%E4%B8%AD">在SpringMVC中</a>
+<ul>
+<li><a href="#%E8%AF%B7%E6%B1%82%E8%BD%AC%E5%8F%91%E6%9C%89%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8F">请求转发有三种方式</a></li>
+<li><a href="#%E9%87%8D%E5%AE%9A%E5%90%91%E6%9C%89%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F">重定向有两种方式</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#restfull%E6%9C%8D%E5%8A%A1%E6%8E%A5%E5%8F%A3%E5%BC%80%E5%8F%91">RESTFull服务接口开发</a>
+<ul>
+<li><a href="#%E5%B8%B8%E7%94%A8restfull%E6%B3%A8%E8%A7%A3">常用RESTFull注解</a></li>
+<li><a href="#%E8%BF%94%E5%9B%9Ejson%E6%A0%BC%E5%BC%8F%E7%9A%84%E6%95%B0%E6%8D%AE-%E6%B6%88%E6%81%AF%E8%BD%AC%E6%8D%A2%E5%99%A8">返回JSON格式的数据 —— 消息转换器</a>
+<ul>
+<li><a href="#%E6%B6%88%E6%81%AF%E8%BD%AC%E6%8D%A2%E5%99%A8%E6%98%AF%E4%BB%80%E4%B9%88">消息转换器是什么</a></li>
+<li><a href="#%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AE%E4%B8%80%E4%B8%AA%E8%BD%AC%E6%8D%A2json%E6%A0%BC%E5%BC%8F%E7%9A%84%E6%B6%88%E6%81%AF%E8%BD%AC%E6%8D%A2%E5%99%A8">如何配置一个转换JSON格式的消息转换器</a></li>
+</ul>
+</li>
+<li><a href="#%E9%80%9A%E8%BF%87%E7%BD%91%E9%A1%B5%E6%A8%A1%E6%8B%9Frestfull%E8%AF%B7%E6%B1%82">通过网页模拟RESTFull请求</a></li>
+<li><a href="#resttemplate%E5%B7%A5%E5%85%B7%E7%B1%BB">RestTemplate工具类</a></li>
+</ul>
+</li>
+<li><a href="#%E5%A4%84%E7%90%86%E8%AF%B7%E6%B1%82%E4%B9%B1%E7%A0%81">处理请求乱码</a></li>
+<li><a href="#%E5%9C%A8springmvc%E6%96%B9%E6%B3%95%E4%B8%AD%E6%94%AF%E6%8C%81%E7%9A%84%E5%8F%82%E6%95%B0">在SpringMVC方法中支持的参数</a><br>
+*
+<ul>
+<li><a href="#%E6%B3%A8%E5%85%A5%E5%8E%9F%E7%94%9Fservlet%E5%AF%B9%E8%B1%A1">注入原生Servlet对象</a></li>
+<li><a href="#%E4%BB%A5%E6%B5%81%E7%9A%84%E6%96%B9%E5%BC%8F%E8%AF%BB%E5%8F%96%E8%AF%B7%E6%B1%82%E4%BD%93-%E4%BB%A5%E6%B5%81%E7%9A%84%E6%96%B9%E5%BC%8F%E5%93%8D%E5%BA%94%E5%88%B0%E5%AE%A2%E6%88%B7%E7%AB%AF">以流的方式读取请求体、以流的方式响应到客户端</a></li>
+<li><a href="#%E8%AF%BB%E5%8F%96%E8%AF%B7%E6%B1%82%E4%BD%93%E5%92%8C%E8%AF%B7%E6%B1%82%E5%A4%B4%E6%95%B0%E6%8D%AE">读取请求体和请求头数据</a></li>
+<li><a href="#%E5%90%91%E9%A1%B5%E9%9D%A2%E4%BC%A0%E5%8F%82">向页面传参</a></li>
+</ul>
+</li>
+<li><a href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0">文件上传</a>
+<ul>
+<li><a href="#%E8%AF%B4%E6%98%8E">说明</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8Eapache-fileupload%E9%80%9A%E7%94%A8%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%8C%85">基于Apache Fileupload通用文件上传包</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8Eservlet30%E6%A0%87%E5%87%86api%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0">基于Servlet3.0标准API文件上传</a></li>
+<li><a href="#%E6%96%87%E4%BB%B6%E5%90%8D%E4%B8%8A%E4%BC%A0%E4%B9%B1%E7%A0%81%E9%97%AE%E9%A2%98">文件名上传乱码问题</a></li>
+</ul>
+</li>
+<li><a href="#%E6%8B%A6%E6%88%AA%E5%99%A8">拦截器</a>
+<ul>
+<li><a href="#%E6%8B%A6%E6%88%AA%E5%99%A8-vs-%E8%BF%87%E6%BB%A4%E5%99%A8">拦截器 VS 过滤器</a></li>
+<li><a href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E6%8B%A6%E6%88%AA%E5%99%A8">如何使用拦截器</a>
+<ul>
+<li><a href="#%E5%AE%9A%E4%B9%89%E6%8B%A6%E6%88%AA%E5%99%A8%E7%B1%BB">定义拦截器类</a></li>
+<li><a href="#%E9%85%8D%E7%BD%AE%E6%8B%A6%E6%88%AA%E5%99%A8">配置拦截器</a>
+<ul>
+<li><a href="#%E5%85%A8%E5%B1%80%E6%8B%A6%E6%88%AA%E5%99%A8">全局拦截器</a></li>
+<li><a href="#%E6%8B%A6%E6%88%AA%E6%8C%87%E5%AE%9A%E8%AF%B7%E6%B1%82%E7%9A%84%E6%8B%A6%E6%88%AA%E5%99%A8">拦截指定请求的拦截器</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://klein-moretti.github.io/post/san-da-kuang-jia-zheng-he">
+              <h3 class="post-title">
+                三大框架整合
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '5f51923c9ec53cb563e3',
+    clientSecret: 'f9761a694a1efb19ea50e2c5c589dd76d15e775a',
+    repo: 'klein-moretti.github.io',
+    owner: 'klein-moretti',
+    admin: ['klein-moretti'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://klein-moretti.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
+
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
